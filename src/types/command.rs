@@ -54,7 +54,8 @@ pub(crate) struct Subscribe {
     pub(crate) id: u64,
     #[serde(rename = "type")]
     pub(crate) msg_type: String,
-    pub(crate) event_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) event_type: Option<String>,
 }
 
 //used for Event Unsubscribe

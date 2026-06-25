@@ -417,7 +417,7 @@ impl HassClient {
         let cmd = Command::SubscribeEvent(Subscribe {
             id,
             msg_type: "subscribe_events".to_owned(),
-            event_type: event_name.to_owned(),
+            event_type: event_name.and_then(|opt| Some(opt.to_owned())),
         });
 
         let response = self.command(cmd, Some(id)).await?;
