@@ -272,7 +272,7 @@ async fn test_subscribe_events() {
     let mut client = HassClient::new(&url).await.unwrap();
     client.auth_with_longlivedtoken("token").await.unwrap();
 
-    let mut rx = client.subscribe_event("state_changed").await.unwrap();
+    let (_, mut rx) = client.subscribe_event(Some("state_changed")).await.unwrap();
     let event = rx.recv().await.unwrap();
     assert_eq!(event.event.event_type, "state_changed");
     assert_eq!(event.event.data.entity_id.unwrap(), "light.kitchen");
@@ -377,7 +377,7 @@ async fn test_unsubscribe_event_manual() {
     let mut client = HassClient::new(&url).await.unwrap();
     client.auth_with_longlivedtoken("token").await.unwrap();
 
-    let _rx = client.subscribe_event("state_changed").await.unwrap();
+    let _rx = client.subscribe_event(Some("state_changed")).await.unwrap();
 
     let unsub_res = client.unsubscribe_event(1).await;
     assert!(unsub_res.is_ok());
@@ -450,14 +450,13 @@ async fn test_unsubscribe_event_auto() {
     let mut client = HassClient::new(&url).await.unwrap();
     client.auth_with_longlivedtoken("token").await.unwrap();
 
-    let rx = client.subscribe_event("state_changed").await.unwrap();
+    let rx = client.subscribe_event(Some("state_changed")).await.unwrap();
 
     // Explicitly drop rx to trigger auto-unsubscribe on next received event
     drop(rx);
 
     server_task.await.unwrap();
 }
-
 
 #[test]
 fn test_deserialize_event() {
@@ -496,4 +495,3 @@ fn test_deserialize_event() {
     let res = res.unwrap();
     assert!(matches!(res, hass_rs::types::Response::Event(_)));
 }
-
