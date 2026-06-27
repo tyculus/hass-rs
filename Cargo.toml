@@ -16,6 +16,7 @@ exclude = [".github/*"]
 [features]
 
 [dependencies]
+chrono = { version = "0.4", features = ["serde"] }
 futures-util = "0.3.32"
 log = "0.4"
 parking_lot = "0.12"

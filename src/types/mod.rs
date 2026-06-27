@@ -11,6 +11,10 @@ mod services;
 mod registry_area;
 mod registry_device;
 mod registry_entity;
+mod response;
+mod services;
+mod tag;
+mod trigger;
 
 pub(crate) use command::*;
 pub use config::*;
@@ -23,3 +27,7 @@ pub use services::*;
 pub use registry_area::*;
 pub use registry_device::*;
 pub use registry_entity::*;
+pub use response::*;
+pub use services::*;
+pub use tag::*;
+pub use trigger::*;

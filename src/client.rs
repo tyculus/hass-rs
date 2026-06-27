@@ -2,8 +2,8 @@
 
 use crate::types::{
     Ask, Auth, CallService, Command, HassConfig, HassEntity, HassPanels, HassRegistryArea,
-    HassRegistryDevice, HassRegistryEntity, HassServices, Response, Subscribe, Unsubscribe,
-    WSEvent,
+    HassRegistryDevice, HassRegistryEntity, HassServices, HassTag, HassTrigger, ListTriggers,
+    Response, Subscribe, Unsubscribe, WSEvent,
 };
 use crate::{HassError, HassIssues, HassResult};
 
@@ -368,6 +368,51 @@ impl HassClient {
                 let value = data.result()?;
                 let entities: Vec<HassRegistryEntity> = serde_json::from_value(value)?;
                 Ok(entities)
+            }
+            unknown => Err(HassError::UnknownPayloadReceived(unknown)),
+        }
+    }
+
+    /// This will get the list of available triggers for a given device.
+    ///
+    /// The server will respond with a result message containing the device's trigger list.
+    pub async fn get_trigger_list(&mut self, device_id: &str) -> HassResult<Vec<HassTrigger>> {
+        let id = self.next_seq();
+
+        let entity_req = Command::GetTriggerList(ListTriggers {
+            id,
+            msg_type: "device_automation/trigger/list".to_owned(),
+            device_id: device_id.to_owned(),
+        });
+        let response = self.command(entity_req, Some(id)).await?;
+
+        match response {
+            Response::Result(data) => {
+                let value = data.result()?;
+                let triggers: Vec<HassTrigger> = serde_json::from_value(value)?;
+                Ok(triggers)
+            }
+            unknown => Err(HassError::UnknownPayloadReceived(unknown)),
+        }
+    }
+
+    /// This will get the list of registered NFC tags.
+    ///
+    /// The server will respond with a result message containing the NFC tag list.
+    pub async fn get_tag_list(&mut self) -> HassResult<Vec<HassTag>> {
+        let id = self.next_seq();
+
+        let entity_req = Command::GetTagList(Ask {
+            id,
+            msg_type: "tag/list".to_owned(),
+        });
+        let response = self.command(entity_req, Some(id)).await?;
+
+        match response {
+            Response::Result(data) => {
+                let value = data.result()?;
+                let triggers: Vec<HassTag> = serde_json::from_value(value)?;
+                Ok(triggers)
             }
             unknown => Err(HassError::UnknownPayloadReceived(unknown)),
         }

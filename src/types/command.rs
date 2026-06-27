@@ -17,6 +17,8 @@ pub(crate) enum Command {
     GetAreaRegistryList(Ask),
     GetDeviceRegistryList(Ask),
     GetEntityRegistryList(Ask),
+    GetTriggerList(ListTriggers),
+    GetTagList(Ask),
     ListRepairs(Ask),
     CallService(CallService),
     #[allow(dead_code)]
@@ -76,4 +78,12 @@ pub(crate) struct CallService {
     pub(crate) domain: String,
     pub(crate) service: String,
     pub(crate) service_data: Option<Value>,
+}
+
+#[derive(Debug, Serialize, PartialEq)]
+pub(crate) struct ListTriggers {
+    pub(crate) id: u64,
+    #[serde(rename = "type")]
+    pub(crate) msg_type: String,
+    pub(crate) device_id: String,
 }
