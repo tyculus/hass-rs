@@ -25,7 +25,7 @@ async fn main() {
 
     println!("Subscribe to an Event");
 
-    let mut event_receiver = client
+    let (_, mut event_receiver) = client
         .subscribe_event(Some("state_changed"))
         .await
         .expect("Failed to subscribe");

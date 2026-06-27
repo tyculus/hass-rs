@@ -456,7 +456,10 @@ impl HassClient {
     /// The command subscribe_event will subscribe your client to the event bus.
     ///
     /// Returns a channel that will receive the subscription messages.
-    pub async fn subscribe_event(&mut self, event_name: &str) -> HassResult<Receiver<WSEvent>> {
+    pub async fn subscribe_event(
+        &mut self,
+        event_name: Option<&str>,
+    ) -> HassResult<(u64, Receiver<WSEvent>)> {
         let id = self.next_seq();
 
         let cmd = Command::SubscribeEvent(Subscribe {
@@ -471,7 +474,7 @@ impl HassClient {
             Response::Result(v) if v.is_ok() => {
                 let (tx, rx) = channel(20);
                 self.rx_state.subscriptions.lock().insert(v.id, tx);
-                return Ok(rx);
+                return Ok((id, rx));
             }
             Response::Result(v) => Err(HassError::ResponseError(v)),
             unknown => Err(HassError::UnknownPayloadReceived(unknown)),
